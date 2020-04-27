@@ -16,7 +16,20 @@ enum class Rotation {
 struct Position2D {
     int row;
     int column;
+
+    Position2D& operator+=(Position2D other)
+    {
+        row += other.row;
+        column += other.column;
+
+        return *this;
+    }
 };
+
+inline Position2D operator+(Position2D lhs, Position2D rhs)
+{
+    return lhs += rhs;
+}
 
 struct MatrixPosition {
     Position2D position;
@@ -28,6 +41,8 @@ class Matrix {
 public:
     constexpr static auto unsigned_size = static_cast<unsigned>(Rows * Columns);
     using Contents = std::array<T, unsigned_size>;
+
+    constexpr Matrix() = default;
 
     constexpr Matrix(Contents const& contents):
         contents_{contents}
@@ -41,6 +56,11 @@ public:
     constexpr T const& operator[](MatrixPosition const& position) const
     {
         return contents_[index_of(position)];
+    }
+
+    void fill(T const& element)
+    {
+        contents_.fill(element);
     }
 
 private:
