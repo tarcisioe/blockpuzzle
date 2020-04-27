@@ -5,7 +5,6 @@
 
 #include "cursespp/cursespp.hpp"
 
-
 template <typename T>
 void print_matrix(geom::Matrix<T, 4, 4> const& m, geom::Rotation r)
 {
@@ -17,7 +16,6 @@ void print_matrix(geom::Matrix<T, 4, 4> const& m, geom::Rotation r)
     }
 }
 
-
 void draw_piece(
     cursespp::Window& window,
     game::Piece const& piece,
@@ -28,23 +26,22 @@ void draw_piece(
         auto window_row = top_left.row + r + 1;
 
         for (auto c = 0; c < 4; ++c) {
-            auto window_column = 2*(top_left.column + c) + 1;
+            auto window_column = 2 * (top_left.column + c) + 1;
 
             auto solid = piece.shape()[{{r, c}, rotation}];
 
             if (solid) {
                 window.move_waddch(window_row, window_column, '#');
-                window.move_waddch(window_row, window_column+1, '#');
+                window.move_waddch(window_row, window_column + 1, '#');
             }
         }
     }
-
 }
 
-constexpr auto KEY_DOWN	= 0402;
+constexpr auto KEY_DOWN = 0402;
 constexpr auto KEY_UP = 0403;
 constexpr auto KEY_LEFT = 0404;
-constexpr auto KEY_RIGHT =  0405;
+constexpr auto KEY_RIGHT = 0405;
 
 int main()
 try {
@@ -58,12 +55,7 @@ try {
 
     main_window.wrefresh();
 
-    auto board = curses.newwin(
-        20 + 2,
-        10*2 + 2,
-        0,
-        0
-    );
+    auto board = curses.newwin(20 + 2, 10 * 2 + 2, 0, 0);
 
     board.add_box();
     board.wrefresh();
@@ -111,4 +103,3 @@ try {
 } catch (...) {
     return 1;
 }
-

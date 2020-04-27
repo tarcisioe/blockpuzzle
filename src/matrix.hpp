@@ -3,7 +3,6 @@
 
 #include <array>
 
-
 namespace geom {
 
 enum class Rotation {
@@ -36,17 +35,14 @@ struct MatrixPosition {
     Rotation rotation;
 };
 
-template <typename T, int Rows, int Columns>
-class Matrix {
+template <typename T, int Rows, int Columns> class Matrix {
 public:
     constexpr static auto unsigned_size = static_cast<unsigned>(Rows * Columns);
     using Contents = std::array<T, unsigned_size>;
 
     constexpr Matrix() = default;
 
-    constexpr Matrix(Contents const& contents):
-        contents_{contents}
-    {}
+    constexpr Matrix(Contents const& contents): contents_{contents} {}
 
     constexpr T& operator[](MatrixPosition const& position)
     {
@@ -75,47 +71,27 @@ private:
         auto const constants = rotation_constants(position.rotation);
 
         return static_cast<std::size_t>(
-            constants.base +
-            constants.row_multiplier * position.position.row +
-            constants.column_multiplier * position.position.column
-        );
+            constants.base + constants.row_multiplier * position.position.row +
+            constants.column_multiplier * position.position.column);
     }
 
     constexpr static RotationConstants rotation_constants(Rotation amount)
     {
         switch (amount) {
             case Rotation::R0: {
-                return {
-                    0,
-                    Columns,
-                    1
-                };
+                return {0, Columns, 1};
             }
             case Rotation::R90: {
-                return {
-                    (Rows-1)*Columns,
-                    1,
-                    -Columns
-                };
+                return {(Rows - 1) * Columns, 1, -Columns};
             }
             case Rotation::R180: {
-                return {
-                    (Rows*Columns) - 1,
-                    -Columns,
-                    -1
-                };
+                return {(Rows * Columns) - 1, -Columns, -1};
             }
             case Rotation::R270: {
-                return {
-                    Columns - 1,
-                    -1,
-                    Columns
-                };
+                return {Columns - 1, -1, Columns};
             }
             default:
-                return {
-                    0, 0, 0
-                };
+                return {0, 0, 0};
         }
     }
 

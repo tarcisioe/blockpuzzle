@@ -1,9 +1,8 @@
 #ifndef GAME_BOARD_HPP
 #define GAME_BOARD_HPP
 
-#include "piece.hpp"
 #include "matrix.hpp"
-
+#include "piece.hpp"
 
 namespace game {
 
@@ -27,7 +26,7 @@ public:
     bool in_bounds(geom::Position2D position) const
     {
         return (position.row >= 0 and position.row < rows) and
-               (position.column >=0 and position.column < columns);
+               (position.column >= 0 and position.column < columns);
     }
 
     bool piece_fits(

@@ -4,7 +4,6 @@
 #include <memory>
 #include <stdexcept>
 
-
 namespace cursespp {
 
 struct CursesError: std::runtime_error {

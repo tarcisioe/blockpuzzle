@@ -2,23 +2,19 @@
 
 #include <curses.h>
 
-
 namespace cursespp {
 
 namespace {
-    void check_error(int error_code, char const* message)
-    {
-        if (error_code == ERR) {
-            throw CursesError{message};
-        }
+void check_error(int error_code, char const* message)
+{
+    if (error_code == ERR) {
+        throw CursesError{message};
     }
+}
 }
 
 struct Window::Impl {
-    Impl(WINDOW* window):
-        window_{window}
-    {
-    }
+    Impl(WINDOW* window): window_{window} {}
 
     ~Impl()
     {
@@ -30,15 +26,15 @@ struct Window::Impl {
     WINDOW* window_;
 };
 
-Window::Window(std::unique_ptr<Impl> impl):
-    impl_{std::move(impl)}
-{}
+Window::Window(std::unique_ptr<Impl> impl): impl_{std::move(impl)} {}
 
 Window::~Window() = default;
 
 void Window::move_waddch(int row, int column, char c)
 {
-    check_error(mvwaddch(impl_->window_, row, column, static_cast<chtype>(c)), "Error on call to waddch().");
+    check_error(
+        mvwaddch(impl_->window_, row, column, static_cast<chtype>(c)),
+        "Error on call to waddch().");
 }
 
 void Window::add_box()
@@ -69,9 +65,7 @@ public:
     }
 };
 
-Curses::Curses():
-    impl{std::make_unique<Impl>()}
-{}
+Curses::Curses(): impl{std::make_unique<Impl>()} {}
 
 Curses::~Curses() = default;
 
@@ -98,8 +92,7 @@ Window Curses::main_window()
 Window Curses::newwin(int rows, int columns, int begin_y, int begin_x)
 {
     return Window{std::make_unique<Window::Impl>(
-        ::newwin(rows, columns, begin_y, begin_x)
-    )};
+        ::newwin(rows, columns, begin_y, begin_x))};
 }
 
 }
