@@ -2,7 +2,7 @@ blockpuzzle
 ===========
 
 Code for a clone of a famous block puzzle game, developed on-stream, on
-twitch.tv/tarcisioe.
+https://twitch.tv/tarcisioe.
 
 Building
 --------
