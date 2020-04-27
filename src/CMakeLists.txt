@@ -4,6 +4,10 @@ target_sources(
     main
         PRIVATE
             main.cpp
+            matrix.cpp
+            matrix.hpp
+            piece.cpp
+            piece.hpp
 )
 
 target_link_libraries(
