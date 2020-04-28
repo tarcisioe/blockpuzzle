@@ -34,7 +34,7 @@ void Window::move_waddch(int row, int column, char c)
 {
     check_error(
         mvwaddch(impl_->window_, row, column, static_cast<chtype>(c)),
-        "Error on call to waddch().");
+        "Error on call to mvwaddch().");
 }
 
 void Window::add_box()
@@ -50,6 +50,11 @@ void Window::wrefresh()
 int Window::wgetch()
 {
     return ::wgetch(impl_->window_);
+}
+
+void Window::move_print_int(int row, int column, int value)
+{
+    check_error(::mvwprintw(impl_->window_, row, column, "%d", value), "Error on call to mvwprintw.");
 }
 
 class Curses::Impl {

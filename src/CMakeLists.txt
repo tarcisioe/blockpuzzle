@@ -6,6 +6,8 @@ target_sources(
     main
         PRIVATE
             main.cpp
+            board.cpp
+            board.hpp
             matrix.cpp
             matrix.hpp
             piece.cpp

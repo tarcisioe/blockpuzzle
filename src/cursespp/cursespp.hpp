@@ -21,6 +21,8 @@ public:
     void wrefresh();
     int wgetch();
 
+    void move_print_int(int row, int column, int value);
+
 private:
     struct Impl;
     Window(std::unique_ptr<Impl> impl);

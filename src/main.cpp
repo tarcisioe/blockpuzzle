@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "board.hpp"
 #include "matrix.hpp"
 #include "piece.hpp"
 
@@ -38,10 +39,16 @@ void draw_piece(
     }
 }
 
-constexpr auto KEY_DOWN = 0402;
-constexpr auto KEY_UP = 0403;
-constexpr auto KEY_LEFT = 0404;
-constexpr auto KEY_RIGHT = 0405;
+constexpr auto KEY_DOWN = 66;
+constexpr auto KEY_UP = 65;
+constexpr auto KEY_LEFT = 68;
+constexpr auto KEY_RIGHT = 67;
+
+geom::Rotation next(geom::Rotation rotation)
+{
+    auto value = static_cast<int>(rotation);
+    return static_cast<geom::Rotation>((value + 1) % 4);
+}
 
 int main()
 try {
@@ -63,6 +70,7 @@ try {
     auto const& piece = game::pieces[0];
 
     auto position = geom::Position2D{0, 0};
+    auto rotation = geom::Rotation::R0;
 
     draw_piece(board, piece, position, geom::Rotation::R0);
 
@@ -77,29 +85,56 @@ try {
         }
     };
 
+    auto game_board = game::Board{};
+
     while (true) {
         auto c = main_window.wgetch();
+        board.move_print_int(0, 0, c);
 
         if (c == 'q') {
             break;
         }
 
-        switch (c) {
-            case 'a': {
-                position += {0, -1};
-                break;
+        auto delta = [&]() -> geom::Position2D
+        {
+            switch (c) {
+                case KEY_LEFT: {
+                    return {0, -1};
+                }
+                case KEY_RIGHT: {
+                    return {0, 1};
+                }
+                case KEY_DOWN: {
+                    return {1, 0};
+                }
             }
-            case 'e': {
-                position += {0, 1};
-                break;
+
+            return {0, 0};
+        }();
+
+        auto new_rotation = [&]() -> geom::Rotation
+        {
+            switch (c) {
+                case KEY_UP: {
+                    return next(rotation);
+                }
             }
+
+            return rotation;
+        }();
+
+        if (game_board.piece_fits(piece, position + delta, new_rotation))
+        {
+            position += delta;
+            rotation = new_rotation;
         }
 
         clear();
-        draw_piece(board, piece, position, geom::Rotation::R0);
+        draw_piece(board, piece, position, rotation);
 
         board.wrefresh();
     }
-} catch (...) {
+} catch (std::exception const& e) {
+    std::clog << e.what() << '\n';
     return 1;
 }
