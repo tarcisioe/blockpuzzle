@@ -1,11 +1,11 @@
-#ifndef GAME_PIECE_HPP
-#define GAME_PIECE_HPP
+#ifndef BLOCKPUZZLE_PIECE_HPP
+#define BLOCKPUZZLE_PIECE_HPP
 
 #include <array>
 
-#include "matrix.hpp"
+#include "geom/matrix.hpp"
 
-namespace game {
+namespace blockpuzzle {
 
 enum class BlockType {
     Empty,

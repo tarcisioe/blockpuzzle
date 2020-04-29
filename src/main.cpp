@@ -1,8 +1,9 @@
+#include <chrono>
 #include <iostream>
+#include <thread>
 
-#include "board.hpp"
-#include "matrix.hpp"
-#include "piece.hpp"
+#include "blockpuzzle/game.hpp"
+#include "geom/matrix.hpp"
 
 #include "cursespp/cursespp.hpp"
 
@@ -19,7 +20,7 @@ void print_matrix(geom::Matrix<T, 4, 4> const& m, geom::Rotation r)
 
 void draw_piece(
     cursespp::Window& window,
-    game::Piece const& piece,
+    blockpuzzle::Piece const& piece,
     geom::Position2D top_left,
     geom::Rotation rotation)
 {
@@ -39,16 +40,33 @@ void draw_piece(
     }
 }
 
-constexpr auto KEY_DOWN = 66;
-constexpr auto KEY_UP = 65;
-constexpr auto KEY_LEFT = 68;
-constexpr auto KEY_RIGHT = 67;
-
-geom::Rotation next(geom::Rotation rotation)
+void draw_board(
+    cursespp::Window& window,
+    blockpuzzle::Board const& board
+)
 {
-    auto value = static_cast<int>(rotation);
-    return static_cast<geom::Rotation>((value + 1) % 4);
+    for (auto r = 0; r < board.rows; ++r) {
+        auto window_row = r + 1;
+
+        for (auto c = 0; c < board.columns; ++c) {
+            auto window_column = 2 * c + 1;
+
+            auto solid = board[{r, c}] != blockpuzzle::BlockType::Empty;
+
+            if (solid) {
+                window.move_waddch(window_row, window_column, '#');
+                window.move_waddch(window_row, window_column + 1, '#');
+            }
+        }
+    }
+
 }
+
+
+constexpr auto KEY_DOWN = 0402;
+constexpr auto KEY_UP = 0403;
+constexpr auto KEY_LEFT = 0404;
+constexpr auto KEY_RIGHT = 0405;
 
 int main()
 try {
@@ -60,19 +78,15 @@ try {
 
     auto main_window = curses.main_window();
 
+    main_window.keypad(true);
+    main_window.set_timeout(0);
+
     main_window.wrefresh();
 
     auto board = curses.newwin(20 + 2, 10 * 2 + 2, 0, 0);
 
     board.add_box();
     board.wrefresh();
-
-    auto const& piece = game::pieces[0];
-
-    auto position = geom::Position2D{0, 0};
-    auto rotation = geom::Rotation::R0;
-
-    draw_piece(board, piece, position, geom::Rotation::R0);
 
     board.wrefresh();
 
@@ -85,54 +99,56 @@ try {
         }
     };
 
-    auto game_board = game::Board{};
+    auto game = blockpuzzle::BlockPuzzle{};
 
     while (true) {
+        using namespace std::chrono;
+        using namespace std::chrono_literals;
+
+        auto frame_start = high_resolution_clock::now();
+
         auto c = main_window.wgetch();
-        board.move_print_int(0, 0, c);
 
         if (c == 'q') {
             break;
         }
 
-        auto delta = [&]() -> geom::Position2D
+        auto input = [&]() -> blockpuzzle::Input
         {
+            using blockpuzzle::Input;
+
             switch (c) {
                 case KEY_LEFT: {
-                    return {0, -1};
+                    return Input::Left;
                 }
                 case KEY_RIGHT: {
-                    return {0, 1};
+                    return Input::Right;
                 }
                 case KEY_DOWN: {
-                    return {1, 0};
+                    return Input::Drop;
                 }
-            }
-
-            return {0, 0};
-        }();
-
-        auto new_rotation = [&]() -> geom::Rotation
-        {
-            switch (c) {
                 case KEY_UP: {
-                    return next(rotation);
+                    return Input::Rotate;
+                }
+                default: {
+                    return Input::Nothing;
                 }
             }
-
-            return rotation;
         }();
 
-        if (game_board.piece_fits(piece, position + delta, new_rotation))
-        {
-            position += delta;
-            rotation = new_rotation;
-        }
+        game.advance(input);
 
         clear();
-        draw_piece(board, piece, position, rotation);
+        auto const& falling = game.current_piece();
+        draw_piece(board, falling.piece, falling.position, falling.rotation);
+        draw_board(board, game.board());
 
         board.wrefresh();
+
+        auto done = high_resolution_clock::now();
+        auto remaining_time = 16666us - (done - frame_start);
+
+        std::this_thread::sleep_for(remaining_time);
     }
 } catch (std::exception const& e) {
     std::clog << e.what() << '\n';

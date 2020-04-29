@@ -1,10 +1,10 @@
-#ifndef GAME_BOARD_HPP
-#define GAME_BOARD_HPP
+#ifndef BLOCKPUZZLE_BOARD_HPP
+#define BLOCKPUZZLE_BOARD_HPP
 
-#include "matrix.hpp"
+#include "geom/matrix.hpp"
 #include "piece.hpp"
 
-namespace game {
+namespace blockpuzzle {
 
 class Board {
 public:
@@ -19,6 +19,11 @@ public:
     }
 
     BlockType operator[](geom::Position2D position) const
+    {
+        return blocks[{position, geom::Rotation::R0}];
+    }
+
+    BlockType& operator[](geom::Position2D position)
     {
         return blocks[{position, geom::Rotation::R0}];
     }

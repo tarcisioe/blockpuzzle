@@ -20,6 +20,8 @@ public:
     void add_box();
     void wrefresh();
     int wgetch();
+    void keypad(bool enabled);
+    void set_timeout(int delay);
 
     void move_print_int(int row, int column, int value);
 

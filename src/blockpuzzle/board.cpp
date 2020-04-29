@@ -1,6 +1,6 @@
 #include "board.hpp"
 
-namespace game {
+namespace blockpuzzle {
 bool Board::piece_fits(
     Piece const& piece,
     geom::Position2D top_left,

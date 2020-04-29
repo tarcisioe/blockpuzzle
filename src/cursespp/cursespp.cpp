@@ -57,6 +57,16 @@ void Window::move_print_int(int row, int column, int value)
     check_error(::mvwprintw(impl_->window_, row, column, "%d", value), "Error on call to mvwprintw.");
 }
 
+void Window::keypad(bool enabled)
+{
+    check_error(::keypad(impl_->window_, enabled), "Error on call to keypad.");
+}
+
+void Window::set_timeout(int delay)
+{
+    ::wtimeout(impl_->window_, delay);
+}
+
 class Curses::Impl {
 public:
     Impl()
