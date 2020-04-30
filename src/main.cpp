@@ -68,6 +68,17 @@ constexpr auto KEY_UP = 0403;
 constexpr auto KEY_LEFT = 0404;
 constexpr auto KEY_RIGHT = 0405;
 
+
+blockpuzzle::RNG create_rng()
+{
+    auto device = std::random_device{};
+
+    return blockpuzzle::RNG{
+        std::default_random_engine{device()}
+    };
+}
+
+
 int main()
 try {
     auto curses = cursespp::Curses();
@@ -99,7 +110,7 @@ try {
         }
     };
 
-    auto game = blockpuzzle::BlockPuzzle{};
+    auto game = blockpuzzle::BlockPuzzle{create_rng()};
 
     while (true) {
         using namespace std::chrono;

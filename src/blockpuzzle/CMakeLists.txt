@@ -6,10 +6,12 @@ target_sources(
             board.hpp
             game.hpp
             piece.hpp
+            rng.hpp
         PRIVATE
             board.cpp
             game.cpp
             piece.cpp
+            rng.cpp
 )
 
 target_include_directories(

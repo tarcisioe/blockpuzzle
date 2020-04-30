@@ -3,6 +3,7 @@
 
 #include <functional>
 
+#include "rng.hpp"
 #include "board.hpp"
 
 namespace blockpuzzle {
@@ -36,8 +37,9 @@ enum class Input {
 
 class BlockPuzzle {
 public:
-    BlockPuzzle():
-        state{FallingPiece{pieces[0]}}
+    BlockPuzzle(RNG rng):
+        rng_{std::move(rng)},
+        state{FallingPiece{random_piece()}}
     {}
 
     bool is_game_over() const
@@ -55,6 +57,13 @@ public:
         return board_;
     }
 
+    Piece const& random_piece()
+    {
+        auto index = rng_.get_int();
+
+        return pieces[index];
+    }
+
     void advance(Input user_input);
 
 private:
@@ -63,6 +72,7 @@ private:
     void pick_new_piece();
     bool try_drop();
 
+    RNG rng_;
     Board board_;
     GameState state;
     bool game_over{false};

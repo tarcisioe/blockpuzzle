@@ -68,11 +68,12 @@ private:
 
     constexpr static std::size_t index_of(MatrixPosition position)
     {
-        auto const constants = rotation_constants(position.rotation);
+        auto const [base, row_multiplier, column_multiplier] =
+            rotation_constants(position.rotation);
 
         return static_cast<std::size_t>(
-            constants.base + constants.row_multiplier * position.position.row +
-            constants.column_multiplier * position.position.column);
+            base + row_multiplier * position.position.row +
+            column_multiplier * position.position.column);
     }
 
     constexpr static RotationConstants rotation_constants(Rotation amount)

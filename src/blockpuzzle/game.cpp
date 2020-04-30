@@ -88,7 +88,7 @@ void BlockPuzzle::lock_piece()
 
 void BlockPuzzle::pick_new_piece()
 {
-    state.piece = FallingPiece{pieces[0]};
+    state.piece = FallingPiece{random_piece()};
 }
 
 void BlockPuzzle::advance(Input input)
