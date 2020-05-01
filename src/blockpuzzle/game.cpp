@@ -127,7 +127,8 @@ void BlockPuzzle::mark_cleared_lines()
         }
     }
 
-    state.clearing_ticks = 20;
+    state.cleared_count += static_cast<int>(state.cleared_lines.size());
+    state.clearing_ticks = std::max(1, 20 - (state.level));
 }
 
 namespace {

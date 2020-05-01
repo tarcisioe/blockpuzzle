@@ -46,6 +46,8 @@ struct GameState {
 
     FallingPiece piece;
     int ticks{0};
+    int level{0};
+    int cleared_count{0};
     std::vector<int> cleared_lines;
     int clearing_ticks{0};
 };
@@ -80,6 +82,16 @@ public:
     Board const& board() const
     {
         return board_;
+    }
+
+    int level() const
+    {
+        return state.level + 1;
+    }
+
+    int cleared_count() const
+    {
+        return state.cleared_count;
     }
 
     void advance(Input user_input);

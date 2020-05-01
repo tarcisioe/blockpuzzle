@@ -105,7 +105,10 @@ try {
     board.add_box();
     board.wrefresh();
 
-    board.wrefresh();
+    auto cleared = curses.newwin(1 + 2, 5 + 2, 0, 22);
+
+    cleared.add_box();
+    cleared.wrefresh();
 
     auto game = blockpuzzle::BlockPuzzle{create_rng()};
 
@@ -152,8 +155,10 @@ try {
         auto const& falling = game.current_piece();
         draw_board(board, game.board());
         draw_piece(board, falling.piece, falling.position, falling.rotation);
+        cleared.move_print_int(1, 1, game.cleared_count());
 
         board.wrefresh();
+        cleared.wrefresh();
 
         auto done = high_resolution_clock::now();
         auto remaining_time = 16666us - (done - frame_start);
