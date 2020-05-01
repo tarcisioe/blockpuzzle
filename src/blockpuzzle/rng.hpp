@@ -1,6 +1,8 @@
 #ifndef BLOCKPUZZLE_RANDOM_HPP
 #define BLOCKPUZZLE_RANDOM_HPP
 
+#include <array>
+#include <algorithm>
 #include <random>
 
 
@@ -12,14 +14,17 @@ public:
         engine_{std::move(engine)}
     {}
 
-    std::size_t get_int()
+    std::array<std::size_t, 7> random_piece_sequence()
     {
-        return distribution(engine_);
+        auto sequence = std::array<std::size_t, 7>{0, 1, 2, 3, 4, 5, 6};
+
+        std::shuffle(begin(sequence), end(sequence), engine_);
+
+        return sequence;
     }
 
 private:
     std::default_random_engine engine_;
-    std::uniform_int_distribution<std::size_t> distribution{0, 6};
 };
 
 }

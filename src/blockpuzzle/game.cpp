@@ -89,9 +89,13 @@ void BlockPuzzle::lock_piece()
     }
 }
 
-void BlockPuzzle::pick_new_piece()
+Piece const& BlockPuzzle::pick_new_piece()
 {
-    state.piece = FallingPiece{random_piece()};
+    if (pieces.empty()) {
+        pieces = PieceBag{rng_};
+    }
+
+    return pieces.random_piece();
 }
 
 void BlockPuzzle::mark_cleared_lines()
@@ -172,7 +176,7 @@ void BlockPuzzle::advance(Input input)
 
             mark_cleared_lines();
 
-            pick_new_piece();
+            state.piece = FallingPiece{pick_new_piece()};
         }
     }
 

@@ -19,6 +19,26 @@ struct FallingPiece {
     geom::Rotation rotation{geom::Rotation::R0};
 };
 
+class PieceBag {
+public:
+    PieceBag(RNG& rng):
+        indices{rng.random_piece_sequence()}
+    {}
+
+    Piece const& random_piece()
+    {
+        return pieces[indices[current_index++]];
+    }
+
+    bool empty() {
+        return current_index >= indices.size();
+    }
+
+private:
+    std::array<std::size_t, 7> indices;
+    std::size_t current_index{0};
+};
+
 struct GameState {
     explicit GameState(FallingPiece p):
         piece{std::move(p)}
@@ -42,7 +62,8 @@ class BlockPuzzle {
 public:
     BlockPuzzle(RNG rng):
         rng_{std::move(rng)},
-        state{FallingPiece{random_piece()}}
+        pieces{rng_},
+        state{FallingPiece{pick_new_piece()}}
     {}
 
     bool is_game_over() const
@@ -60,25 +81,19 @@ public:
         return board_;
     }
 
-    Piece const& random_piece()
-    {
-        auto index = rng_.get_int();
-
-        return pieces[index];
-    }
-
     void advance(Input user_input);
 
 private:
     void apply_input(Input user_input);
     void lock_piece();
-    void pick_new_piece();
+    Piece const& pick_new_piece();
     void mark_cleared_lines();
     void clear_lines();
     bool try_drop();
 
-    RNG rng_;
     Board board_;
+    RNG rng_;
+    PieceBag pieces;
     GameState state;
     bool game_over{false};
 };
