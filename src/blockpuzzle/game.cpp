@@ -18,6 +18,11 @@ geom::Rotation next(geom::Rotation rotation)
 
 void BlockPuzzle::apply_input(Input input)
 {
+    if (input == Input::FullDrop) {
+        while (try_drop());
+        return;
+    }
+
     auto delta = [&]() -> geom::Position2D
     {
         switch (input) {

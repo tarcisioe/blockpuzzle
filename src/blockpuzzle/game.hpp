@@ -55,6 +55,7 @@ enum class Input {
     Drop,
     Right,
     Left,
+    FullDrop,
     Nothing,
 };
 

@@ -138,6 +138,9 @@ try {
                 case KEY_UP: {
                     return Input::Rotate;
                 }
+                case ' ': {
+                    return Input::FullDrop;
+                }
                 default: {
                     return Input::Nothing;
                 }
