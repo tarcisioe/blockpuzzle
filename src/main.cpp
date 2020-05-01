@@ -40,10 +40,24 @@ void draw_piece(
     }
 }
 
-void draw_board(
-    cursespp::Window& window,
-    blockpuzzle::Board const& board
-)
+char block_character(blockpuzzle::BlockType type)
+{
+    using blockpuzzle::BlockType;
+
+    switch (type) {
+        case BlockType::Line: {
+            return '=';
+        }
+        case BlockType::Empty: {
+            return ' ';
+        }
+        default: {
+            return '#';
+        }
+    }
+}
+
+void draw_board(cursespp::Window& window, blockpuzzle::Board const& board)
 {
     for (auto r = 0; r < board.rows; ++r) {
         auto window_row = r + 1;
@@ -51,33 +65,25 @@ void draw_board(
         for (auto c = 0; c < board.columns; ++c) {
             auto window_column = 2 * c + 1;
 
-            auto solid = board[{r, c}] != blockpuzzle::BlockType::Empty;
+            auto character = block_character(board[{r, c}]);
 
-            if (solid) {
-                window.move_waddch(window_row, window_column, '#');
-                window.move_waddch(window_row, window_column + 1, '#');
-            }
+            window.move_waddch(window_row, window_column, character);
+            window.move_waddch(window_row, window_column + 1, character);
         }
     }
-
 }
-
 
 constexpr auto KEY_DOWN = 0402;
 constexpr auto KEY_UP = 0403;
 constexpr auto KEY_LEFT = 0404;
 constexpr auto KEY_RIGHT = 0405;
 
-
 blockpuzzle::RNG create_rng()
 {
     auto device = std::random_device{};
 
-    return blockpuzzle::RNG{
-        std::default_random_engine{device()}
-    };
+    return blockpuzzle::RNG{std::default_random_engine{device()}};
 }
-
 
 int main()
 try {
@@ -100,15 +106,6 @@ try {
     board.wrefresh();
 
     board.wrefresh();
-
-    auto clear = [&board]()
-    {
-        for (auto row = 1; row < 21; ++row) {
-            for (auto column = 1; column < 21; ++column) {
-                board.move_waddch(row, column, ' ');
-            }
-        }
-    };
 
     auto game = blockpuzzle::BlockPuzzle{create_rng()};
 
@@ -149,10 +146,9 @@ try {
 
         game.advance(input);
 
-        clear();
         auto const& falling = game.current_piece();
-        draw_piece(board, falling.piece, falling.position, falling.rotation);
         draw_board(board, game.board());
+        draw_piece(board, falling.piece, falling.position, falling.rotation);
 
         board.wrefresh();
 

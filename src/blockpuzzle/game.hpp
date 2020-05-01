@@ -2,6 +2,7 @@
 #define GAME_GAME_HPP
 
 #include <functional>
+#include <vector>
 
 #include "rng.hpp"
 #include "board.hpp"
@@ -25,6 +26,8 @@ struct GameState {
 
     FallingPiece piece;
     int ticks{0};
+    std::vector<int> cleared_lines;
+    int clearing_ticks{0};
 };
 
 enum class Input {
@@ -70,6 +73,8 @@ private:
     void apply_input(Input user_input);
     void lock_piece();
     void pick_new_piece();
+    void mark_cleared_lines();
+    void clear_lines();
     bool try_drop();
 
     RNG rng_;

@@ -1,5 +1,8 @@
 #include "game.hpp"
 
+#include <algorithm>
+
+
 namespace blockpuzzle {
 
 namespace {
@@ -91,8 +94,72 @@ void BlockPuzzle::pick_new_piece()
     state.piece = FallingPiece{random_piece()};
 }
 
+void BlockPuzzle::mark_cleared_lines()
+{
+    auto start = state.piece.position.row;
+    auto end = state.piece.position.row + 4;
+
+    for (auto r = start; r < end ; ++r) {
+        [&]()
+        {
+            for (auto c = 0; c < board_.columns; ++c) {
+                if (board_[{r, c}] == BlockType::Empty) {
+                    return;
+                }
+            }
+
+            state.cleared_lines.push_back(r);
+        }();
+    }
+
+    for (auto cleared: state.cleared_lines) {
+        for (auto c = 0; c < board_.columns; ++c) {
+            board_[{cleared, c}] = BlockType::Line;
+        }
+    }
+
+    state.clearing_ticks = 20;
+}
+
+namespace {
+    bool contains(std::vector<int> const& v, int value)
+    {
+        auto end = std::end(v);
+
+        return std::find(begin(v), end, value) != end;
+    }
+}
+
+void BlockPuzzle::clear_lines()
+{
+    auto writing_row = board_.rows - 1;
+
+    for (auto row = writing_row; row >= 0; --row) {
+        if (contains(state.cleared_lines, row)) {
+            continue;
+        }
+
+        for (auto c = 0; c < board_.columns; ++c) {
+            board_[{writing_row, c}] = board_[{row, c}];
+        }
+
+        --writing_row;
+    }
+
+    state.cleared_lines.clear();
+}
+
 void BlockPuzzle::advance(Input input)
 {
+    if (state.clearing_ticks > 0) {
+        --state.clearing_ticks;
+        return;
+    }
+
+    if (not state.cleared_lines.empty()) {
+        clear_lines();
+    }
+
     apply_input(input);
 
     if (state.ticks == 20) {
@@ -102,6 +169,9 @@ void BlockPuzzle::advance(Input input)
 
         if (not dropped) {
             lock_piece();
+
+            mark_cleared_lines();
+
             pick_new_piece();
         }
     }
