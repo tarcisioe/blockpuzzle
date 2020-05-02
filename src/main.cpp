@@ -110,9 +110,14 @@ try {
     cleared.add_box();
     cleared.wrefresh();
 
+    auto level = curses.newwin(1 + 2, 5 + 2, 3, 22);
+
+    level.add_box();
+    level.wrefresh();
+
     auto game = blockpuzzle::BlockPuzzle{create_rng()};
 
-    while (true) {
+    while (not game.is_game_over()) {
         using namespace std::chrono;
         using namespace std::chrono_literals;
 
@@ -156,9 +161,11 @@ try {
         draw_board(board, game.board());
         draw_piece(board, falling.piece, falling.position, falling.rotation);
         cleared.move_print_int(1, 1, game.cleared_count());
+        level.move_print_int(1, 1, game.level());
 
         board.wrefresh();
         cleared.wrefresh();
+        level.wrefresh();
 
         auto done = high_resolution_clock::now();
         auto remaining_time = 16666us - (done - frame_start);

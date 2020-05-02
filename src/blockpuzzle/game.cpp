@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-
 namespace blockpuzzle {
 
 namespace {
@@ -15,11 +14,10 @@ geom::Rotation next(geom::Rotation rotation)
 
 }
 
-
 void BlockPuzzle::apply_input(Input input)
 {
     if (input == Input::FullDrop) {
-        while (try_drop());
+        while (try_drop()) {}
         return;
     }
 
@@ -55,10 +53,7 @@ void BlockPuzzle::apply_input(Input input)
         }
     }();
 
-    if (board_.piece_fits(
-            state.piece.piece,
-            new_position,
-            new_rotation)) {
+    if (board_.piece_fits(state.piece.piece, new_position, new_rotation)) {
         state.piece.position = new_position;
         state.piece.rotation = new_rotation;
     }
@@ -77,6 +72,14 @@ bool BlockPuzzle::try_drop()
     }
 
     return false;
+}
+
+bool BlockPuzzle::check_game_over() const
+{
+    return not board_.piece_fits(
+        state.piece.piece,
+        state.piece.position,
+        state.piece.rotation);
 }
 
 void BlockPuzzle::lock_piece()
@@ -108,7 +111,7 @@ void BlockPuzzle::mark_cleared_lines()
     auto start = state.piece.position.row;
     auto end = state.piece.position.row + 4;
 
-    for (auto r = start; r < end ; ++r) {
+    for (auto r = start; r < end; ++r) {
         [&]()
         {
             for (auto c = 0; c < board_.columns; ++c) {
@@ -128,16 +131,17 @@ void BlockPuzzle::mark_cleared_lines()
     }
 
     state.cleared_count += static_cast<int>(state.cleared_lines.size());
+    state.level = state.cleared_count / 10;
     state.clearing_ticks = std::max(1, 20 - (state.level));
 }
 
 namespace {
-    bool contains(std::vector<int> const& v, int value)
-    {
-        auto end = std::end(v);
+bool contains(std::vector<int> const& v, int value)
+{
+    auto end = std::end(v);
 
-        return std::find(begin(v), end, value) != end;
-    }
+    return std::find(begin(v), end, value) != end;
+}
 }
 
 void BlockPuzzle::clear_lines()
@@ -183,6 +187,7 @@ void BlockPuzzle::advance(Input input)
             mark_cleared_lines();
 
             state.piece = FallingPiece{pick_new_piece()};
+            game_over = check_game_over();
         }
     }
 

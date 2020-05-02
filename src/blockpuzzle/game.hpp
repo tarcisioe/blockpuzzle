@@ -4,15 +4,13 @@
 #include <functional>
 #include <vector>
 
-#include "rng.hpp"
 #include "board.hpp"
+#include "rng.hpp"
 
 namespace blockpuzzle {
 
 struct FallingPiece {
-    explicit FallingPiece(Piece const& p):
-        piece{p}
-    {}
+    explicit FallingPiece(Piece const& p): piece{p} {}
 
     std::reference_wrapper<Piece const> piece;
     geom::Position2D position{0, 0};
@@ -21,16 +19,15 @@ struct FallingPiece {
 
 class PieceBag {
 public:
-    PieceBag(RNG& rng):
-        indices{rng.random_piece_sequence()}
-    {}
+    PieceBag(RNG& rng): indices{rng.random_piece_sequence()} {}
 
     Piece const& random_piece()
     {
         return pieces[indices[current_index++]];
     }
 
-    bool empty() {
+    bool empty()
+    {
         return current_index >= indices.size();
     }
 
@@ -40,9 +37,7 @@ private:
 };
 
 struct GameState {
-    explicit GameState(FallingPiece p):
-        piece{std::move(p)}
-    {}
+    explicit GameState(FallingPiece p): piece{std::move(p)} {}
 
     FallingPiece piece;
     int ticks{0};
@@ -64,9 +59,8 @@ enum class Input {
 class BlockPuzzle {
 public:
     BlockPuzzle(RNG rng):
-        rng_{std::move(rng)},
-        pieces{rng_},
-        state{FallingPiece{pick_new_piece()}}
+        rng_{std::move(rng)}, pieces{rng_}, state{FallingPiece
+                                                  {pick_new_piece()}}
     {}
 
     bool is_game_over() const
@@ -99,10 +93,13 @@ public:
 private:
     void apply_input(Input user_input);
     void lock_piece();
-    Piece const& pick_new_piece();
     void mark_cleared_lines();
     void clear_lines();
+
     bool try_drop();
+    bool check_game_over() const;
+
+    Piece const& pick_new_piece();
 
     Board board_;
     RNG rng_;
