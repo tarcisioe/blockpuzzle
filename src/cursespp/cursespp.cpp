@@ -54,7 +54,9 @@ int Window::wgetch()
 
 void Window::move_print_int(int row, int column, int value)
 {
-    check_error(::mvwprintw(impl_->window_, row, column, "%d", value), "Error on call to mvwprintw.");
+    check_error(
+        ::mvwprintw(impl_->window_, row, column, "%d", value),
+        "Error on call to mvwprintw.");
 }
 
 void Window::keypad(bool enabled)
