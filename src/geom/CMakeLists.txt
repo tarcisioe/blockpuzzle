@@ -8,6 +8,12 @@ target_sources(
             matrix.cpp
 )
 
+target_include_directories(
+    geom
+        PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 target_link_libraries(
     geom
         PRIVATE

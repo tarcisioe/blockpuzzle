@@ -2,6 +2,10 @@ add_subdirectory(geom)
 add_subdirectory(blockpuzzle)
 add_subdirectory(cursespp)
 
+if(RAYLIB_FRONTEND)
+    add_subdirectory(app_raylib)
+endif()
+
 add_executable(main)
 
 target_sources(
