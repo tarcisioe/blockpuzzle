@@ -14,4 +14,7 @@ cmake -B build
 cmake --build build
 ```
 
+To enable the Raylib frontend (by @edricgarran) add `-DRAYLIB_FRONTEND=ON` to
+the first line. Raylib has system dependencies on `opengl/system` and `xorg/system`.
+
 You can inspect options with `ccmake build`.
